@@ -1,5 +1,7 @@
 # Find A Food Truck
-This application will return the list of open food trucks
+This application will return the list of open food trucks.
+The data source is provided by the 
+
 
 ## Environment Set-up:
 1. Create Virtual Environment:<br>
@@ -18,10 +20,14 @@ This application will return the list of open food trucks
 1. `show_open_food_trucks.py`: driver function <br>
 2. `api_client.py`: FoodTruckFinder class implements the rest client <br>
 3. `utilities.py`: contains utility functions such as retrieving current time and day, and formatting output  <br>
+4. `config.ini`: config file contains base url and app token
 
 ## Implementation Logic:
 The goal was to utilize most of the functionalities of the Socrata API<br>
-The base url for the API call is :`http://data.sfgov.org/resource/bbb8-hzi6.json`<br>
+The base url for the API call is :`https://data.sfgov.org/resource/jjew-r69b.json`<br>
+### Authentication:
+Authentication is done by using App Token obtained from `https://data.sfgov.org`<br>
+The App Token is passed along in the request URL in the form of the `$$app_token` parameter<br>
 The built in filters utilized:<br>
 1. `dayofweekstr`: Filter result by the current day of the week. Example: `?dayofweekstr=Saturday`<br>
 2. `$where`: Use the structure of the where clause and use `start24` and `end24` fields to filter results for food trucks open at the current time. Example: `$where=start24<'18:52'and end24>'18:52'`<br>
@@ -29,4 +35,4 @@ The built in filters utilized:<br>
 4. `$order`: Use the order clause to order the response by a specific field, `applicant` in this case. Example: `$order=applicant`<br>
 5. `$limit and $offset`: Use limit and offset parameter to implement pagination. Example: `$limit=5&$offset=0`<br>
 Sample API call:<br>
-`http://data.sfgov.org/resource/bbb8-hzi6.json?dayofweekstr=Saturday&$where=start24<'18:52'and end24>'18:52'&$select=applicant,location&$order=applicant&$limit=5&$offset=0`
+`https://data.sfgov.org/resource/jjew-r69b.json?$$app_token=###########&dayofweekstr=Saturday&$where=start24<'19:29'and end24>'19:29'&$select=applicant,location&$order=applicant&$limit=10&$offset=50`
