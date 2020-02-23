@@ -37,4 +37,6 @@ The built in filters utilized:<br>
 5. `$limit and $offset`: Use limit and offset parameter to implement pagination. Example: `$limit=5&$offset=0`<br>
 <br>
 Sample API call:<br>
+```
 https://data.sfgov.org/resource/jjew-r69b.json?$$app_token=###########&dayofweekstr=Saturday&$where=start24<'19:29'and end24>'19:29'&$select=applicant,location&$order=applicant&$limit=10&$offset=50
+```
