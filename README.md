@@ -28,6 +28,7 @@ The base url for the API call is :`https://data.sfgov.org/resource/jjew-r69b.jso
 ### Authentication:
 Authentication is done by using App Token obtained from `https://data.sfgov.org`<br>
 The App Token is passed along in the request URL in the form of the `$$app_token` parameter<br>
+### Data Filter:
 The built in filters utilized:<br>
 1. `dayofweekstr`: Filter result by the current day of the week. Example: `?dayofweekstr=Saturday`<br>
 2. `$where`: Use the structure of the where clause and use `start24` and `end24` fields to filter results for food trucks open at the current time. Example: `$where=start24<'18:52'and end24>'18:52'`<br>
