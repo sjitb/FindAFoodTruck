@@ -4,84 +4,70 @@
 # > pip install requests
 # Documentation for the requests library can be found here: http://docs.python-requests.org/en/master/
 
-import requests
+from typing import Dict, List, Optional
 from datetime import datetime
-import os
+import logging
 
-#custom libraries
-import utilities
 from api_client import FoodTruckFinder
+import utilities
 
+class FoodTruckDisplay:
+    def __init__(self):
+        self.client = FoodTruckFinder()
+        self.page = 1
+        self.page_size = 10
 
+    def get_data(self, day: str, time: str, offset: int) -> Dict:
+        order_by = "applicant"
+        fields = ["applicant", "location", "start24", "end24"]
+        return self.client.get_data(fields, day=day, time=time, offset=offset, order_by=order_by)
 
-def main():
-    """
-    Driver function for CLI
-    """
+    def display_page(self, data: List[Dict]) -> None:
+        if not data:
+            print("\nNo results found.\n")
+            return
+        utilities.print_results(data)
 
-    print("Launching App")
-    print("################ TIME TO FIND SOME FOOD TRUCKS ################")
-    date = datetime.now()
-    currDay = utilities.getWeekDay(date)
-    currTime = utilities.getTime24(date)
+    def run(self, day: str, time: str) -> None:
+        offset = 0
+        while True:
+            response = self.get_data(day, time, offset)
+            
+            if not response['response']:
+                print("Error fetching data")
+                break
 
-    #fields to be displayed
-    fieldList = ['applicant','location']
-    #field by which the result is ordered.
-    orderBy = 'applicant'
-
-    pageDir = 0
-    page = 1
-
-    #get pagination info from user
-    offset = input("How many food trucks do you want to see in a page: ")
-
-    if offset.isdigit():
-        offset = int(offset)
-    else:
-        print("Sorry, not a valid input")
-        return
-
-    #create an instance of the FoodTruckFinder class
-    foodTruckClient = FoodTruckFinder()
-    res = foodTruckClient.getData(currDay,currTime,offset,orderBy,fieldList,pageDir)
-
-    while True:
-        if res['response']:
-            data = res['data']
-            if len(data) == 0:
+            data = response['data']
+            if not data:
                 print("\nEnd of List. Thanks!\n")
                 break
 
-            utilities.print_results(data)    
+            self.display_page(data)
 
-            if page == 1:
-                userInput = input("See more results? (Y/N): ").lower()
-                if userInput == "y" or userInput == "next":
-                    userInput = "next"
-                elif userInput == "n":
-                    userInput = "exit"
-                else:
-                    userInput = input("Not a valid input. See more results? (Y/N): ").lower()
-            else:
-                userInput = input("Page:" + str(page) +"(next, prev, exit): ").lower()
-
-            if userInput == "next":
-                pageDir = 1
-                page += 1
-                res = foodTruckClient.getData(currDay,currTime,offset,orderBy,fieldList,pageDir)
-            elif userInput == "prev":
-                pageDir = -1
-                page -= 1
-                res = foodTruckClient.getData(currDay,currTime,offset,orderBy,fieldList,pageDir)
-            elif userInput == "exit":
+            if self.page == 1:
+                user_input = input("See more results? (Y/N): ").lower()
+                if user_input == 'y':
+                    self.page += 1
+                    offset += self.page_size
+                    continue
                 break
             else:
-                userInput = input("Not a valid input. Go to (next, prev, exit): ").lower()
+                user_input = input(f"Page {self.page} - Enter 'next', 'prev', or 'exit': ").lower()
+                if user_input == 'exit':
+                    break
+                elif user_input == 'next':
+                    offset += self.page_size
+                    self.page += 1
+                elif user_input == 'prev' and self.page > 1:
+                    offset -= self.page_size
+                    self.page -= 1
 
-        else:
-            print("ERROR: Error retrieving data. Please try agin.")
-            break
-    return
+def main():
+    display = FoodTruckDisplay()
+    date = datetime.now()
+    currDay = utilities.getWeekDay(date)
+    currTime = utilities.getTime24(date)
+    display.run(currDay, currTime)
+
 if __name__ == "__main__":
     main()
