@@ -4,12 +4,14 @@ The data source is provided by the
 
 
 ## Environment Set-up:
+1. Install poetry:<br>
+`python -m pip install poetry`
+1. Configure poetry:<br>
+`poetry config virtualenvs.in-project true`
 1. Create Virtual Environment:<br>
-`python -m venv env`
-2. Launch Python Virtual Environment by executing:<br>
-`.\env\Scripts\activate`
-3. Install required libraries listed in `requirements.txt`<br>
-`pip install -r requirements.txt`
+`poetry install`
+1. Launch Python Virtual Environment by executing:<br>
+`poetry shell`
 
 ## Execution and Results:
 1. Run the app by executing: <br>
